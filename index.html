@@ -15,8 +15,8 @@
       margin: 0;
       background-color: #f4f4f4;
     }
-    input {
-      width: 80%;
+    input[type="text"] {
+      width: 70%; /* Reduced width to make space for the color picker */
       padding: 10px;
       margin: 10px 0;
       font-size: 16px;
@@ -36,11 +36,28 @@
     #qrcode {
       margin: 20px 0;
     }
+    .color-picker {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin: 10px 0;
+    }
+    .color-box {
+      width: 30px;
+      height: 30px;
+      border: 2px solid #000;
+      cursor: pointer;
+      background-color: #000000; /* Default color (black) */
+    }
   </style>
 </head>
 <body>
   <h2>QR Code Generator</h2>
   <input type="text" id="text" placeholder="Enter URL or text" />
+  <div class="color-picker">
+    <div class="color-box" id="colorBox"></div>
+    <input type="color" id="color" value="#000000" style="display: none;">
+  </div>
   <button onclick="generateQRCode()">Generate QR Code</button>
   <div id="qrcode"></div>
   <button onclick="downloadQRCode()" style="display:none;" id="downloadBtn">Download QR Code</button>
@@ -49,9 +66,22 @@
   <script>
     let qrCodeInstance;
 
+    // Function to handle color selection
+    const colorBox = document.getElementById('colorBox');
+    const colorInput = document.getElementById('color');
+
+    colorBox.addEventListener('click', () => {
+      colorInput.click(); // Trigger the color picker when the box is clicked
+    });
+
+    colorInput.addEventListener('input', () => {
+      colorBox.style.backgroundColor = colorInput.value; // Update the color box
+    });
+
     function generateQRCode() {
       const text = document.getElementById('text').value;
       const qrContainer = document.getElementById('qrcode');
+      const color = colorInput.value;
       qrContainer.innerHTML = '';
 
       if (!text) {
@@ -59,10 +89,13 @@
         return;
       }
 
+      // Generate the QR code
       qrCodeInstance = new QRCode(qrContainer, {
         text: text,
         width: 200,
-        height: 200
+        height: 200,
+        colorDark: color, // Set the QR code color
+        colorLight: "#ffffff" // Set the background color to white
       });
 
       document.getElementById('downloadBtn').style.display = 'inline';
